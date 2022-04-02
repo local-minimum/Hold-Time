@@ -126,7 +126,7 @@ public class LevelGoal : MonoBehaviour
                     recordText.text = "Illegal highscore value!";
                 } else
                 {
-                    recordText.text = record.ToString();
+                    recordText.text = string.Format("Record: {0}", record.ToString());
                 }
                 recordText.alignment = TextAlignmentOptions.BottomRight;
             }
