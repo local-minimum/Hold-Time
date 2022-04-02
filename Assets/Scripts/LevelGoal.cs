@@ -88,8 +88,8 @@ public class LevelGoal : MonoBehaviour
     float wakeupTime;
 
     private void Start()
-    {
-        levelDoneCanvas.enabled = false;
+    {        
+        levelDoneCanvas.gameObject.SetActive(false);
         levelNameText.text = currentLevelName;
     }
 
@@ -131,7 +131,7 @@ public class LevelGoal : MonoBehaviour
                 recordText.alignment = TextAlignmentOptions.BottomRight;
             }
 
-            levelDoneCanvas.enabled = true;
+            levelDoneCanvas.gameObject.SetActive(true);
             wakeupTime = Time.timeSinceLevelLoad;
             alive = true;
         }

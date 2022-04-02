@@ -87,6 +87,9 @@ public class Age : MonoBehaviour
     [SerializeField]
     Canvas canvas;
 
+    [SerializeField]
+    int startAge = 5;
+
     int years = 0;
     float dayOfYear = 356f;
 
@@ -155,7 +158,8 @@ public class Age : MonoBehaviour
 
     private void Start()
     {
-        canvas.enabled = true;
+        canvas.gameObject.SetActive(true);
+        years = startAge;
     }
 
     private void Update()
@@ -207,5 +211,13 @@ public class Age : MonoBehaviour
         }
         color.a = 0;
         ageField.color = color;
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
     }
 }
