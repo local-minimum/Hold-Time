@@ -4,8 +4,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+enum JumpingState { NotJumping, LeftShoulder, RightShoulder, Keyboard };
+enum JumpingTransition { NotJumping, StartJump, Jumping, EndJump };
+
+public delegate void JumpEvent();
+
+
 public class PlayerController : MonoBehaviour
 {
+    public static event JumpEvent OnJump;
+
     [SerializeField]
     float jumpForceMax = 2500f;
 
@@ -26,7 +34,6 @@ public class PlayerController : MonoBehaviour
 
     Rigidbody2D rb;    
     bool grounded = false;
-    bool jumping = false;
 
     float jumpStart;
     Vector3 lastStableGround;
@@ -43,44 +50,97 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         KillLayer.OnPlayerKilled += ReviveAtCommonGround;
+        LevelGoal.OnLevelDone += HandleLevelDone;
     }
 
     private void OnDisable()
     {
         KillLayer.OnPlayerKilled -= ReviveAtCommonGround;
+        LevelGoal.OnLevelDone -= HandleLevelDone;
+    }
+    private void HandleLevelDone()
+    {
+        enabled = false;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
     }
 
+    JumpingState _jumping = JumpingState.NotJumping;
+    private JumpingTransition CheckJumping()
+    {
+        switch (_jumping)
+        {
+            case JumpingState.NotJumping:
+                if (Gamepad.current.rightShoulder.isPressed)
+                {
+                    _jumping = JumpingState.RightShoulder;
+                    return JumpingTransition.StartJump;
+                }
+                else if (Gamepad.current.leftShoulder.isPressed)
+                {
+                    _jumping = JumpingState.LeftShoulder;
+                    return JumpingTransition.StartJump;
+                }
+                return JumpingTransition.NotJumping;
+            case JumpingState.LeftShoulder:
+                if (!Gamepad.current.leftShoulder.isPressed)
+                {
+                    _jumping = JumpingState.NotJumping;
+                    return JumpingTransition.EndJump;
+                }
+                return JumpingTransition.Jumping;
+            case JumpingState.RightShoulder:
+                if (!Gamepad.current.rightShoulder.isPressed)
+                {
+                    _jumping = JumpingState.NotJumping;
+                    return JumpingTransition.EndJump;
+                }
+                return JumpingTransition.Jumping;
+            default:
+                return JumpingTransition.NotJumping;
+        }
+    }
+    
     private void Update()
     {
-        if (!grounded) return;
+        if (!grounded) return;        
 
-        if (!jumping && Gamepad.current.rightShoulder.isPressed)
+        switch (CheckJumping())
         {
-            jumping = true;
-            jumpStart = Time.realtimeSinceStartup;
+            case JumpingTransition.Jumping:
+                Color c = jumpAimImage.color;
+                c.a = 0;
+                jumpAimImage.color = c;
+                break;
+            case JumpingTransition.StartJump:
+                jumpStart = Time.realtimeSinceStartup;
+                break;
+            case JumpingTransition.EndJump:
+                float angle = Mathf.Deg2Rad * jumpDegrees;
+                float force = Mathf.Lerp(jumpForceMin, jumpForceMax, (Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
+                rb.AddForce(new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle)) * force, ForceMode2D.Impulse);
+                OnJump?.Invoke();
+                break;
+            case JumpingTransition.NotJumping:
+                c = jumpAimImage.color;
+                c.a = 1;
+                jumpAimImage.color = c;
 
-        } else if (jumping && !Gamepad.current.rightShoulder.isPressed)
-        {
-            jumping = false;
-            float angle = Mathf.Deg2Rad * jumpDegrees;
-            float force = Mathf.Lerp(jumpForceMin, jumpForceMax, (Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
-            rb.AddForce(new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle)) * force, ForceMode2D.Impulse);
+                jumpDegrees += jumpDegreesChangeDirection * Time.deltaTime * maxJumpDegrees / angleLoopDuration;
 
-        } else if (!jumping)
-        {            
-            jumpDegrees += jumpDegreesChangeDirection * Time.deltaTime * maxJumpDegrees / angleLoopDuration;
-            
-            if (jumpDegrees > maxJumpDegrees)
-            {
-                jumpDegrees = maxJumpDegrees;
-                jumpDegreesChangeDirection = -1;
-            } else if (jumpDegrees < -maxJumpDegrees)
-            {
-                jumpDegrees = -maxJumpDegrees;
-                jumpDegreesChangeDirection = 1;
-            }
+                if (jumpDegrees > maxJumpDegrees)
+                {
+                    jumpDegrees = maxJumpDegrees;
+                    jumpDegreesChangeDirection = -1;
+                }
+                else if (jumpDegrees < -maxJumpDegrees)
+                {
+                    jumpDegrees = -maxJumpDegrees;
+                    jumpDegreesChangeDirection = 1;
+                }
 
-            jumpAimImage.transform.rotation = Quaternion.Euler(0, 0, jumpDegrees);
+                jumpAimImage.transform.rotation = Quaternion.Euler(0, 0, jumpDegrees);
+                break;
         }
     }
 

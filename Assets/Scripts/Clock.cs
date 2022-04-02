@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum ClockStatus { STOPPED, RUNNING, DESTROYED };
+public enum ClockStatus { SPAWNED, STOPPED, RUNNING, DESTROYED };
 public delegate void ClockTimeEvent(Clock clock, ClockStatus status);
 
 public class Clock : MonoBehaviour
@@ -18,11 +18,8 @@ public class Clock : MonoBehaviour
 
     [SerializeField]
     Transform face;
-
-    [SerializeField, Range(0, 12)]
+    
     float startHour = 3;
-
-    [SerializeField, Range(0, 60)]
     float startMinute = 42;
 
     [SerializeField, Range(-100, 100)]
@@ -53,9 +50,18 @@ public class Clock : MonoBehaviour
 
     private void Start()
     {
+        startHour = Random.Range(0, 11);
+        startMinute = Random.Range(0, 59);
         degHours = -startHour / 12f * 360f;
-        degMinutes = -startMinute / 60f * 360f;
-        SetClock();        
+        degMinutes = -startMinute / 60f * 360f;        
+        SetClock();
+        StartCoroutine(ClockWakupInfo());
+    }
+
+    private IEnumerator<WaitForSeconds> ClockWakupInfo()
+    {
+        yield return new WaitForSeconds(1f);
+        OnClockTime?.Invoke(this, ClockStatus.SPAWNED);
     }
 
     private void SetClock(float addHoursAngle = 0, float addMinutesAngle = 0)
@@ -90,7 +96,7 @@ public class Clock : MonoBehaviour
         }
     }
 
-    static float angleToHourConst = 1 / (2 * Mathf.PI) * 12;
+    static float angleToHourConst = 1f / (2f * Mathf.PI) * 12f;
     float InputHours { 
         get
         {
@@ -102,7 +108,7 @@ public class Clock : MonoBehaviour
         }
     }
 
-    static float angleToMinutesConst = 1 / (2 * Mathf.PI) * 60;
+    static float angleToMinutesConst = 1f / (2f * Mathf.PI) * 60f;
     float InputMinutes
     {
         get
@@ -125,14 +131,20 @@ public class Clock : MonoBehaviour
         return diff;
     }
 
+    static float hourToMinute = 60f / 12f;
+    static float minuteToHour = 12f / 60f;
     private bool CheckInputCorrectTime()
     {
-        float hours = InputHours;
-        float minutes = InputMinutes;
-        if (Mathf.Infinity == hours || Mathf.Infinity == minutes) return false;
-        if (TimeDifference(hours, Hours, 12) > hourTolerance) return false;
-        if (TimeDifference(minutes, Minutes, 60) > minuteTolerance) return false;
-        return true;
+        float inputHours = InputHours;
+        float inputMinutes = InputMinutes;
+        float hours = Hours;
+        float minutes = Minutes;
+        if (Mathf.Infinity == inputHours || Mathf.Infinity == inputMinutes) return false;
+        if (TimeDifference(inputHours, hours, 12) <= hourTolerance && TimeDifference(inputMinutes, minutes, 60) <= minuteTolerance) return true;
+        return (
+            TimeDifference(inputMinutes * minuteToHour, hours, 12) <= hourTolerance 
+            && TimeDifference(inputHours * hourToMinute, minutes, 60) <= minuteTolerance
+        );
     }
 
     private void Update()
