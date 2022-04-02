@@ -102,7 +102,7 @@ public class Age : MonoBehaviour
     private void Start()
     {
         canvas.gameObject.SetActive(true);
-        years = startAge;
+        years = startAge - 1;
     }
 
     private void Update()
