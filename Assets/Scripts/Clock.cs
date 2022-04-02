@@ -49,14 +49,13 @@ public class Clock : MonoBehaviour
     float degHours = 0;
     float degMinutes = 0;
     float correctTime = 0;
-    bool clockAlive = true;
+    bool clockAlive = false;
 
     private void Start()
     {
         degHours = -startHour / 12f * 360f;
         degMinutes = -startMinute / 60f * 360f;
-        SetClock();
-        OnClockTime?.Invoke(this, ClockStatus.RUNNING);
+        SetClock();        
     }
 
     private void SetClock(float addHoursAngle = 0, float addMinutesAngle = 0)
@@ -157,5 +156,31 @@ public class Clock : MonoBehaviour
             correctTime = 0;
             face.transform.localPosition = Vector3.zero;
         }
-    }    
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            clockAlive = true;
+            if (CheckInputCorrectTime())
+            {
+                OnClockTime?.Invoke(this, ClockStatus.STOPPED);
+            } else
+            {
+                OnClockTime?.Invoke(this, ClockStatus.RUNNING);
+            }
+            clockAlive = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            clockAlive = false;
+            OnClockTime?.Invoke(this, ClockStatus.STOPPED);
+            clockAlive = false;
+        }
+    }
 }

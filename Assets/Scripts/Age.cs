@@ -24,12 +24,15 @@ public class Age : MonoBehaviour
     [SerializeField]
     Image yearProgressImage;
 
+    [SerializeField, Range(0, 356)]
+    float destructionReset = 40;
+
     int years = 0;
     float dayOfYear = 356f;
 
     static Age _instance = null;
 
-    List<Clock> activeClocks = new List<Clock>();
+    HashSet<Clock> activeClocks = new HashSet<Clock>();
     
     private void Awake()
     {
@@ -43,19 +46,27 @@ public class Age : MonoBehaviour
     }
     private void OnEnable()
     {
-        Clock.OnClockTime += Clock_OnClockTime;
+        Clock.OnClockTime += HandleClockStatusChange;
+        KillLayer.OnPlayerKilled += HandlePlayerKilled;
     }
 
     private void OnDisable()
     {
-        Clock.OnClockTime -= Clock_OnClockTime;
+        Clock.OnClockTime -= HandleClockStatusChange;
+        KillLayer.OnPlayerKilled -= HandlePlayerKilled;
     }
 
-    private void Clock_OnClockTime(Clock clock, ClockStatus status)
+    private void HandlePlayerKilled()
+    {
+        years++;
+        StartCoroutine(ShowAge(years));
+    }
+
+    private void HandleClockStatusChange(Clock clock, ClockStatus status)
     {
         if (status == ClockStatus.DESTROYED)
         {
-            dayOfYear = 0;
+            dayOfYear = Mathf.Clamp(dayOfYear - destructionReset, 0, 356);
             yearProgressImage.fillAmount = Mathf.Clamp01(dayOfYear / 356);
         } else if (status == ClockStatus.RUNNING)
         {
