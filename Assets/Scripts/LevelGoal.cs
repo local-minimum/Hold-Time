@@ -12,6 +12,9 @@ public class LevelGoal : MonoBehaviour
     public static event LevelDoneEvent OnLevelDone;
 
     [SerializeField]
+    Transform flagHolder;
+
+    [SerializeField]
     string nextLevel = "TutorialScene";
 
     [SerializeField]
@@ -41,6 +44,7 @@ public class LevelGoal : MonoBehaviour
     [SerializeField]
     Canvas levelDoneCanvas;
 
+    Vector3 flagStartPosition;
     int jumps = 0;
     int retries = 0;
 
@@ -91,6 +95,7 @@ public class LevelGoal : MonoBehaviour
     {        
         levelDoneCanvas.gameObject.SetActive(false);
         levelNameText.text = currentLevelName;
+        flagStartPosition = flagHolder.localPosition;
     }
 
     private string HighscoreLocation
@@ -150,11 +155,18 @@ public class LevelGoal : MonoBehaviour
 
     private void Update()
     {
+        UpdateFlag();
         if (!alive || Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
 
         if (Gamepad.current.leftShoulder.IsPressed() || Gamepad.current.rightShoulder.IsPressed())
         {
             HandleNext();
         }
+    }
+
+    void UpdateFlag()
+    {
+        flagHolder.localPosition = flagStartPosition + Vector3.up * 0.5f * Mathf.Sin(Time.timeSinceLevelLoad * 0.5f);
+        flagHolder.rotation = Quaternion.Euler(0, Mathf.Sin(Time.realtimeSinceStartup * 2f) * 30f, 0);
     }
 }
