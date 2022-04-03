@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0, 10f)]
     float angleLoopDuration = 3f;
 
-    Rigidbody2D rb;    
+    Rigidbody2D rb;
     bool grounded = false;
 
     float jumpStart;
@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
 
     float jumpDegrees = 0;
     float jumpDegreesChangeDirection = 1;
+    bool alive = true;
 
     private void Start()
     {
@@ -100,10 +101,10 @@ public class PlayerController : MonoBehaviour
                 return JumpingTransition.NotJumping;
         }
     }
-    
+
     private void Update()
     {
-        if (!grounded) return;        
+        if (!grounded || !alive) return;
 
         switch (CheckJumping())
         {
@@ -146,7 +147,25 @@ public class PlayerController : MonoBehaviour
 
     public void ReviveAtCommonGround()
     {
+        if (alive) StartCoroutine(Revive());
+    }
+
+    IEnumerator<WaitForSeconds> Revive() {
+        alive = false;
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
+        yield return new WaitForSeconds(0.5f);
+        float start = Time.timeSinceLevelLoad;
+        float progress = 0;
+        while (progress < 1)
+        {
+            progress = (Time.timeSinceLevelLoad - start) / 1.5f;
+            transform.position = Vector3.Lerp(transform.position, lastStableGround, 0.1f);
+            yield return new WaitForSeconds(0.02f);
+        }
         transform.position = lastStableGround;
+        rb.isKinematic = false;
+        alive = true;
     }
 
     private void OnCollisionStay2D(Collision2D collision)
