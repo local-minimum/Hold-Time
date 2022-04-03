@@ -115,7 +115,9 @@ public class PlayerController : MonoBehaviour
                 break;
             case JumpingTransition.EndJump:
                 float angle = Mathf.Deg2Rad * jumpDegrees;
-                float force = Mathf.Lerp(jumpForceMin, jumpForceMax, (Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
+                float forcePercent = Mathf.Clamp01((Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
+                Debug.Log(forcePercent);
+                float force = Mathf.Lerp(jumpForceMin, jumpForceMax, forcePercent);
                 rb.AddForce(new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle)) * force, ForceMode2D.Impulse);
                 OnJump?.Invoke();
                 break;

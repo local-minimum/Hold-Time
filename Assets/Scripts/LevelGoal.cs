@@ -53,13 +53,16 @@ public class LevelGoal : MonoBehaviour
         PlayerController.OnJump += HandleJump;
         KillLayer.OnPlayerKilled += HandleDeath;
         Clock.OnClockTime += HandleClock;
+        Age.OnNewAge += HandleNewAge;
     }
+
 
     private void OnDisable()
     {
         PlayerController.OnJump -= HandleJump;
         KillLayer.OnPlayerKilled -= HandleDeath;
         Clock.OnClockTime -= HandleClock;
+        Age.OnNewAge -= HandleNewAge;
     }
 
     int clocks = 0;
@@ -88,7 +91,7 @@ public class LevelGoal : MonoBehaviour
         retries++;
     }
 
-    bool alive = false;
+    bool listenForJump = false;
     float wakeupTime;
 
     private void Start()
@@ -105,46 +108,66 @@ public class LevelGoal : MonoBehaviour
             return string.Format("highscore.{0}", currentLevel);
         }
     }
+
+    private void MakeStats(AgeInfo age, string recordText, TextAlignmentOptions textAlignment) 
+    {
+        jumpsText.text = jumps.ToString();
+        retriesText.text = retries.ToString();
+        clocksText.text = string.Format("{0} / {1}", clocksDestroyed, clocks);       
+        ageText.text = age.ToString();
+
+        this.recordText.text = recordText;
+        this.recordText.alignment = textAlignment;
+
+        levelDoneCanvas.gameObject.SetActive(true);
+        wakeupTime = Time.timeSinceLevelLoad;
+        listenForJump = true;
+    }
+
+    bool continueWithNext = true;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<PlayerController>() != null)
+        if (!listenForJump && collision.GetComponent<PlayerController>() != null)
         {
             OnLevelDone?.Invoke();
-            jumpsText.text = jumps.ToString();
-            retriesText.text = retries.ToString();
-            clocksText.text = string.Format("{0} / {1}", clocksDestroyed, clocks);
-
             var ageInfo = Age.GetAge();
-            ageText.text = ageInfo.ToString();
-
+            string recordText = "Illegal highscore value!";
+            TextAlignmentOptions alignment = TextAlignmentOptions.BottomJustified;
             int recordDays = PlayerPrefs.GetInt(HighscoreLocation, 101 * 365);
+
             if (ageInfo.Age < recordDays)
             {
-                recordText.text = "New Record!";
-                recordText.alignment = TextAlignmentOptions.BottomJustified;
+                recordText = "New Record!";
                 PlayerPrefs.SetInt(HighscoreLocation, ageInfo.Age);
             } else
             {
                 var record = new AgeInfo(recordDays);
-                if (record.years > 100)
-                {
-                    recordText.text = "Illegal highscore value!";
-                } else
-                {
-                    recordText.text = string.Format("Record: {0}", record.ToString());
+                if (record.years < 100) { 
+                    recordText = string.Format("Record: {0}", record.ToString());
                 }
-                recordText.alignment = TextAlignmentOptions.BottomRight;
+                alignment = TextAlignmentOptions.BottomRight;
             }
-
-            levelDoneCanvas.gameObject.SetActive(true);
-            wakeupTime = Time.timeSinceLevelLoad;
-            alive = true;
+            MakeStats(ageInfo, recordText, alignment);
+            continueWithNext = true;
         }
+    }
+
+    private void HandleNewAge(int years)
+    {
+        if (years < 100) return;
+        OnLevelDone?.Invoke();
+        var ageInfo = Age.GetAge();
+        MakeStats(ageInfo, "Too old to continue", TextAlignmentOptions.BottomJustified);
+        continueWithNext = false;
     }
 
     public void HandleNext()
     {
-        if (nextLevel.Length == 0)
+        if (!continueWithNext)
+        {
+            SceneManager.LoadScene(currentLevel);
+        } else if (nextLevel.Length == 0)
         {
             SceneManager.LoadScene("Menu");
         } else
@@ -156,7 +179,7 @@ public class LevelGoal : MonoBehaviour
     private void Update()
     {
         UpdateFlag();
-        if (!alive || Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
+        if (!listenForJump || Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
 
         if (Gamepad.current.leftShoulder.IsPressed() || Gamepad.current.rightShoulder.IsPressed())
         {
