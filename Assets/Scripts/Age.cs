@@ -28,6 +28,9 @@ public class Age : MonoBehaviour
     [SerializeField]
     Image yearProgressImage;
 
+    [SerializeField]
+    Image yearProgressFrame;
+
     [SerializeField, Range(0, 356)]
     float destructionReset = 40;
 
@@ -135,6 +138,8 @@ public class Age : MonoBehaviour
         ageField.text = string.Format("~ Age {0} ~", showingYears);
         float start = Time.timeSinceLevelLoad;
         float delta = 0;
+        yearProgressFrame.enabled = false;
+        yearProgressImage.enabled = false;
         while (delta < textEasingTime)
         {
             delta = Time.timeSinceLevelLoad - start;
@@ -160,6 +165,9 @@ public class Age : MonoBehaviour
         }
         color.a = 0;
         ageField.color = color;
+        yearProgressFrame.enabled = true;
+        yearProgressImage.enabled = true;
+
     }
 
     private void OnDestroy()
