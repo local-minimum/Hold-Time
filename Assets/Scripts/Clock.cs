@@ -41,7 +41,13 @@ public class Clock : MonoBehaviour
     float inputThreshold = 0.3f;
 
     [SerializeField, Range(0, .1f)]
-    float faceShakeMagnitude = 0.4f;
+    float shakeMagnitude = 0.02f;
+
+    float degZeroHours;
+    float degZeroMinutes;
+    Vector3 faceStartPosition;
+    Vector3 hoursStartPosition;
+    Vector3 minutesStartPosition;
 
     float degHours = 0;
     float degMinutes = 0;
@@ -50,10 +56,19 @@ public class Clock : MonoBehaviour
 
     private void Start()
     {
+        degZeroHours = hoursHandle.rotation.eulerAngles.z;
+        degZeroMinutes = minutesHandle.rotation.eulerAngles.z;
+
+        faceStartPosition = face.localPosition;
+        hoursStartPosition = hoursHandle.localPosition;
+        minutesStartPosition = minutesHandle.localPosition;
+
         startHour = Random.Range(0, 11);
         startMinute = Random.Range(0, 59);
+
         degHours = -startHour / 12f * 360f;
         degMinutes = -startMinute / 60f * 360f;        
+
         SetClock();
         StartCoroutine(ClockWakupInfo());
     }
@@ -70,8 +85,8 @@ public class Clock : MonoBehaviour
         degMinutes -= addMinutesAngle;
         degHours %= 360f;
         degMinutes %= 360f;
-        hoursHandle.rotation = Quaternion.Euler(0f, 0f, degHours);
-        minutesHandle.rotation = Quaternion.Euler(0f, 0f, degMinutes);
+        hoursHandle.rotation = Quaternion.Euler(0f, 0f, degZeroHours + degHours);
+        minutesHandle.rotation = Quaternion.Euler(0f, 0f, degZeroMinutes + degMinutes);
     }
 
     static float degreeToHour = 12f / 360f;
@@ -147,27 +162,54 @@ public class Clock : MonoBehaviour
         );
     }
 
+    Vector3 Shake
+    {
+        get
+        {
+            return new Vector3(Random.Range(-shakeMagnitude, shakeMagnitude), Random.Range(-shakeMagnitude, shakeMagnitude));
+        }
+    }
+
     private void Update()
     {
         if (!clockAlive) return;
         SetClock(hoursSpeed * Time.deltaTime, minutesSpeed * Time.deltaTime);
         if (CheckInputCorrectTime())
         {
-            face.transform.localPosition = new Vector3(Random.Range(-faceShakeMagnitude, faceShakeMagnitude), Random.Range(-faceShakeMagnitude, faceShakeMagnitude));
+            face.localPosition = faceStartPosition + Shake;
+            minutesHandle.localPosition = minutesStartPosition + Shake;
+            hoursHandle.localPosition = hoursStartPosition + Shake;
+
             if (correctTime == 0) OnClockTime?.Invoke(this, ClockStatus.STOPPED);
             correctTime += Time.deltaTime;
             if (correctTime >= challengeTime)
             {
                 OnClockTime?.Invoke(this, ClockStatus.DESTROYED);
                 clockAlive = false;
-                Destroy(gameObject);
+                StartCoroutine(Explode());
             }
         } else
         {
             if (correctTime > 0) OnClockTime?.Invoke(this, ClockStatus.RUNNING);
             correctTime = 0;
-            face.transform.localPosition = Vector3.zero;
+            face.localPosition = faceStartPosition;
+            minutesHandle.localPosition = minutesStartPosition;
+            hoursHandle.localPosition = hoursStartPosition;
         }
+    }
+
+    IEnumerator<WaitForSeconds> Explode()
+    {
+        var rb = hoursHandle.gameObject.AddComponent<Rigidbody2D>();
+        rb.velocity = Shake.normalized * Random.Range(1, 5);
+        rb = minutesHandle.gameObject.AddComponent<Rigidbody2D>();
+        rb.velocity = Shake.normalized * Random.Range(1, 5);
+        rb = face.gameObject.AddComponent<Rigidbody2D>();
+        rb.velocity = Shake.normalized * Random.Range(1, 5);
+        yield return new WaitForSeconds(2f);
+        hoursHandle.gameObject.SetActive(false);
+        minutesHandle.gameObject.SetActive(false);
+        face.gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

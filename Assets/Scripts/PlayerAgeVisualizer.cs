@@ -64,7 +64,6 @@ public class PlayerAgeVisualizer : MonoBehaviour
 
     private void SetAge(PlayerAgeSetting settings)
     {
-        Debug.Log(settings.fromAge);
         adultHair.SetActive(settings.hasAdultHair);
         sideHair.gameObject.SetActive(!settings.hasAdultHair);
         crestHair.gameObject.SetActive(!settings.hasAdultHair && settings.hasPunkCrest);
