@@ -85,9 +85,13 @@ public class Age : MonoBehaviour
 
     private void HandlePlayerKilled()
     {
-        years++;
-        OnNewAge?.Invoke(years);
-        StartCoroutine(ShowAge(years));
+        StartCoroutine(DelayIncreaseYear());
+    }
+
+    private IEnumerator<WaitForSeconds> DelayIncreaseYear()
+    {
+        yield return new WaitForSeconds(1f);
+        dayOfYear = 999;
     }
 
     private void HandleClockStatusChange(Clock clock, ClockStatus status)
