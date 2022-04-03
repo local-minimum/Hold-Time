@@ -19,11 +19,48 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     float stillThreshold = 0.1f;
 
+    [SerializeField]
+    float shakeMagnitude = 0.1f;
+
+    [SerializeField]
+    float shakeDuration = 0.5f;
+
+    Vector3 shake = Vector3.zero;
+
     Vector3 referencePosition;
 
     private void Awake()
     {
         referencePosition = transform.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        KillLayer.OnPlayerKilled += HandlePlayerKilled;
+    }
+
+    private void OnDisable()
+    {
+        KillLayer.OnPlayerKilled -= HandlePlayerKilled;
+    }
+
+    private void HandlePlayerKilled()
+    {
+        StartCoroutine(Shaker());
+    }
+
+    IEnumerator<WaitForSeconds> Shaker()
+    {
+        float t0 = Time.timeSinceLevelLoad;
+        float duration = 0;
+        while (duration < shakeDuration)
+        {
+            shake = new Vector3(Random.Range(-shakeMagnitude, shakeMagnitude), Random.Range(-shakeMagnitude, shakeMagnitude), 0);
+            yield return new WaitForSeconds(0.02f);
+            duration = Time.timeSinceLevelLoad - t0;
+        }
+        shake = Vector3.zero;
+
     }
 
     private void Update()
@@ -51,6 +88,6 @@ public class CameraController : MonoBehaviour
         {
             lookAhead.x = 0;
         }
-        transform.localPosition = Vector3.Lerp(transform.localPosition, referencePosition + lookAhead, easing);
+        transform.localPosition = Vector3.Lerp(transform.localPosition, referencePosition + lookAhead, easing) + shake;
     }
 }

@@ -1222,6 +1222,8 @@ MonoBehaviour:
   lookAheadX: 3
   lookAheadY: 1
   stillThreshold: 0.1
+  shakeMagnitude: 0.01
+  shakeDuration: 0.2
 --- !u!1 &5541316098092147014
 GameObject:
   m_ObjectHideFlags: 0

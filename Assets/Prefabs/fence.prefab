@@ -123,3 +123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b67aeed064c6e49acbf419031c7031, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  butterflyPrefab: {fileID: 2248813966550501679, guid: 9ac208e0eddab59429baef136a75c5a4, type: 3}
+  minButterflies: 3
+  maxButterflies: 8
