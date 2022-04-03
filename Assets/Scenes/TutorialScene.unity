@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 87178182}
   - component: {fileID: 87178178}
   - component: {fileID: 87178183}
+  - component: {fileID: 87178184}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -503,6 +504,109 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointingArm: {fileID: 966451008}
+--- !u!114 &87178184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87178177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b419ec5c5be5568419efe48b08acee1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings:
+  - fromAge: 0
+    hasGlasses: 0
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 0
+    pantsColor: {r: 0, g: 0.12076934, b: 0.5568628, a: 1}
+    mainHairColor: {r: 0.5188679, g: 0.24068433, b: 0.11992703, a: 1}
+    crestHairColor: {r: 0, g: 0, b: 0, a: 0}
+  - fromAge: 6
+    hasGlasses: 0
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 1
+    pantsColor: {r: 0.8962264, g: 0.17332679, b: 0.59463745, a: 1}
+    mainHairColor: {r: 0.5188679, g: 0.24068433, b: 0.11992703, a: 1}
+    crestHairColor: {r: 0.5176471, g: 0.2392157, b: 0.121568635, a: 1}
+  - fromAge: 9
+    hasGlasses: 0
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 1
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.011764707, g: 0.41176474, b: 0.83921576, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 13
+    hasGlasses: 0
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 1
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 16
+    hasGlasses: 1
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 1
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 21
+    hasGlasses: 1
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 0
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 27
+    hasGlasses: 1
+    hasCane: 0
+    hasAdultHair: 1
+    hasPunkCrest: 0
+    pantsColor: {r: 0.04926131, g: 0.07789112, b: 0.38679248, a: 1}
+    mainHairColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 42
+    hasGlasses: 1
+    hasCane: 0
+    hasAdultHair: 1
+    hasPunkCrest: 0
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 70
+    hasGlasses: 1
+    hasCane: 0
+    hasAdultHair: 0
+    hasPunkCrest: 0
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.9433962, g: 0.6274475, b: 0.81189334, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  - fromAge: 90
+    hasGlasses: 1
+    hasCane: 1
+    hasAdultHair: 0
+    hasPunkCrest: 0
+    pantsColor: {r: 0.8980393, g: 0.17254902, b: 0.59607846, a: 1}
+    mainHairColor: {r: 0.9433962, g: 0.6274475, b: 0.81189334, a: 1}
+    crestHairColor: {r: 0.011764725, g: 0.41143996, b: 0.8392157, a: 1}
+  pants:
+  - {fileID: 869814235}
+  - {fileID: 1772529775}
+  - {fileID: 1248729011}
+  - {fileID: 1027533210}
+  cane: {fileID: 507546863}
+  glasses: {fileID: 417681240}
+  adultHair: {fileID: 2097328272}
+  sideHair: {fileID: 247606790}
+  crestHair: {fileID: 1280983927}
 --- !u!1 &94470720
 GameObject:
   m_ObjectHideFlags: 0

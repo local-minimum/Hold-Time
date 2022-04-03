@@ -4,8 +4,12 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+public delegate void AgeEvent(int years);
+
 public class Age : MonoBehaviour
 {
+    public static event AgeEvent OnNewAge;
+
     [SerializeField]
     TextMeshProUGUI ageField;
 
@@ -79,6 +83,7 @@ public class Age : MonoBehaviour
     private void HandlePlayerKilled()
     {
         years++;
+        OnNewAge?.Invoke(years);
         StartCoroutine(ShowAge(years));
     }
 
@@ -119,6 +124,7 @@ public class Age : MonoBehaviour
             dayOfYear = 0;
             yearProgressImage.fillAmount = Mathf.Clamp01(dayOfYear / 356);
             years++;
+            OnNewAge?.Invoke(years);
             StartCoroutine(ShowAge(years));
         }
     }       
