@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 enum JumpingState { NotJumping, LeftShoulder, RightShoulder, Keyboard };
 enum JumpingTransition { NotJumping, StartJump, Jumping, EndJump };
@@ -24,7 +23,7 @@ public class PlayerController : MonoBehaviour
     float maxChargeTime = 2f;
 
     [SerializeField]
-    Image jumpAimImage;
+    HandPointer jumpAim;
 
     [SerializeField, Range(0, 45f)]
     float maxJumpDegrees = 20f;
@@ -109,9 +108,7 @@ public class PlayerController : MonoBehaviour
         switch (CheckJumping())
         {
             case JumpingTransition.Jumping:
-                Color c = jumpAimImage.color;
-                c.a = 0;
-                jumpAimImage.color = c;
+                // jumpAim.SetDegrees(0);
                 break;
             case JumpingTransition.StartJump:
                 jumpStart = Time.realtimeSinceStartup;
@@ -123,10 +120,7 @@ public class PlayerController : MonoBehaviour
                 OnJump?.Invoke();
                 break;
             case JumpingTransition.NotJumping:
-                c = jumpAimImage.color;
-                c.a = 1;
-                jumpAimImage.color = c;
-
+                
                 jumpDegrees += jumpDegreesChangeDirection * Time.deltaTime * maxJumpDegrees / angleLoopDuration;
 
                 if (jumpDegrees > maxJumpDegrees)
@@ -140,7 +134,7 @@ public class PlayerController : MonoBehaviour
                     jumpDegreesChangeDirection = 1;
                 }
 
-                jumpAimImage.transform.rotation = Quaternion.Euler(0, 0, jumpDegrees);
+                jumpAim.SetDegrees(jumpDegrees);
                 break;
         }
     }
@@ -192,13 +186,11 @@ public class PlayerController : MonoBehaviour
         {
             lastStableGround = transform.position + Vector3.up * 0.001f;
             grounded = true;
-            jumpAimImage.enabled = true;
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         grounded = false;
-        jumpAimImage.enabled = false;
     }
 }
