@@ -52,7 +52,8 @@ public class Clock : MonoBehaviour
     float degHours = 0;
     float degMinutes = 0;
     float correctTime = 0;
-    bool clockAlive = false;
+    bool inClockZone = false;
+    bool clockDestroyed = false;
 
     private void Start()
     {
@@ -178,8 +179,9 @@ public class Clock : MonoBehaviour
 
     private void Update()
     {
-        if (!clockAlive) return;
+        if (clockDestroyed) return;
         SetClock(hoursSpeed * Time.deltaTime, minutesSpeed * Time.deltaTime);
+        if (!inClockZone) return;
         if (CheckInputCorrectTime())
         {
             face.localPosition = faceStartPosition + Shake;
@@ -191,7 +193,7 @@ public class Clock : MonoBehaviour
             if (correctTime >= challengeTime)
             {
                 OnClockTime?.Invoke(this, ClockStatus.DESTROYED);
-                clockAlive = false;
+                inClockZone = false;
                 StartCoroutine(Explode());
             }
         } else
@@ -216,13 +218,15 @@ public class Clock : MonoBehaviour
         hoursHandle.gameObject.SetActive(false);
         minutesHandle.gameObject.SetActive(false);
         face.gameObject.SetActive(false);
+        clockDestroyed = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (clockDestroyed) return;
         if (collision.tag == "Player")
         {
-            clockAlive = true;
+            inClockZone = true;
             if (CheckInputCorrectTime())
             {
                 OnClockTime?.Invoke(this, ClockStatus.STOPPED);
@@ -230,17 +234,18 @@ public class Clock : MonoBehaviour
             {
                 OnClockTime?.Invoke(this, ClockStatus.RUNNING);
             }
-            clockAlive = true;
+            inClockZone = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (clockDestroyed) return;
         if (collision.tag == "Player")
         {
-            clockAlive = false;
+            inClockZone = false;
             OnClockTime?.Invoke(this, ClockStatus.STOPPED);
-            clockAlive = false;
+            inClockZone = false;
         }
     }
 }

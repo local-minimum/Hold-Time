@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 enum JumpingTransition { NotJumping, StartJump, Jumping, EndJump };
-
+enum GroundStates { NONE, Stable, Unstable };
 public delegate void JumpEvent();
 
 
@@ -169,8 +169,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!grounded && collision.gameObject.tag == "StableGround")
+        if (!grounded)
         {
+            var groundState = GroundStates.NONE;
+            if (collision.gameObject.tag == "StableGround") groundState = GroundStates.Stable;
+            if (collision.gameObject.tag == "UnstableGround") groundState = GroundStates.Unstable;
+            if (groundState == GroundStates.NONE) return;
+
             Vector2 collisionCenter = Vector2.zero;
             for (int i = 0; i<collision.contacts.Length; i++)
             {
@@ -179,17 +184,17 @@ public class PlayerController : MonoBehaviour
             collisionCenter /= collision.contacts.Length;
             if (collisionCenter.y < transform.position.y)
             {
-                StartCoroutine(AttemptSetStableGround(transform.position));
+                StartCoroutine(AttemptSetStableGround(transform.position, groundState));
             }
         }
     }
 
-    IEnumerator<WaitForSeconds> AttemptSetStableGround(Vector3 position)
+    IEnumerator<WaitForSeconds> AttemptSetStableGround(Vector3 position, GroundStates state)
     {
         yield return new WaitForSeconds(0.5f);
         if (Vector3.Magnitude(transform.position - position) < 0.1f)
         {
-            lastStableGround = transform.position + Vector3.up * 0.001f;
+            if (state == GroundStates.Stable) lastStableGround = transform.position + Vector3.up * 0.001f;
             grounded = true;
         }
     }
