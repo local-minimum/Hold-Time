@@ -1392,6 +1392,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 686956684134203518, guid: ff9befc95f2fe7f4890d352ffb3e392b, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 686956684134203518, guid: ff9befc95f2fe7f4890d352ffb3e392b, type: 3}
+      propertyPath: m_Pitch
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 686956684134203518, guid: ff9befc95f2fe7f4890d352ffb3e392b, type: 3}
+      propertyPath: m_Volume
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5541316098164053467, guid: ff9befc95f2fe7f4890d352ffb3e392b, type: 3}
       propertyPath: m_RootOrder
       value: 4

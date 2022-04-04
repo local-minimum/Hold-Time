@@ -34,7 +34,7 @@ public class MainMenu : MonoBehaviour
     GameObject showing;
 
     private void Start()
-    {
+    {        
         if (SimpleUnifiedInput.HasGamepad)
         {
             UseGamepad.text += string.Join("\n", NoGamePad.Split('|'));

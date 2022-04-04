@@ -47,7 +47,8 @@ public class Age : MonoBehaviour
     bool levelDone = false;
 
     HashSet<Clock> activeClocks = new HashSet<Clock>();
-    
+    TickTocker tickTocker;
+
     public static AgeInfo GetAge()
     {
         return new AgeInfo(_instance.years, _instance.dayOfYear);
@@ -104,9 +105,11 @@ public class Age : MonoBehaviour
         } else if (status == ClockStatus.RUNNING)
         {
             activeClocks.Add(clock);
+            if (activeClocks.Count == 1) tickTocker.Tick = true;
         } else
         {
             activeClocks.Remove(clock);
+            if (activeClocks.Count == 0) tickTocker.Tick = false;
         }
     }
 
@@ -114,6 +117,7 @@ public class Age : MonoBehaviour
     {
         canvas.gameObject.SetActive(true);
         years = startAge - 1;
+        tickTocker = FindObjectOfType<TickTocker>();
     }
 
     private void Update()
