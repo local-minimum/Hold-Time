@@ -11,6 +11,9 @@ public class Clock : MonoBehaviour
     public static event ClockTimeEvent OnClockTime;
 
     [SerializeField]
+    Butterfly butterflyPrefab;
+
+    [SerializeField]
     Transform hoursHandle;
 
     [SerializeField]
@@ -18,7 +21,7 @@ public class Clock : MonoBehaviour
 
     [SerializeField]
     Transform face;
-    
+
     float startHour = 3;
     float startMinute = 42;
 
@@ -68,7 +71,7 @@ public class Clock : MonoBehaviour
         startMinute = Random.Range(0, 59);
 
         degHours = -startHour / 12f * 360f;
-        degMinutes = -startMinute / 60f * 360f;        
+        degMinutes = -startMinute / 60f * 360f;
 
         SetClock();
         StartCoroutine(ClockWakupInfo());
@@ -114,15 +117,15 @@ public class Clock : MonoBehaviour
 
     static float angleToHourConst = 1f / (2f * Mathf.PI) * 12f;
     bool hoursFromKeyboard;
-    float InputHours { 
+    float InputHours {
         get
         {
-            
+
             Vector2 hours = SimpleUnifiedInput.VirtualPrimaryStick(inputThreshold, out hoursFromKeyboard);
             if (hours.sqrMagnitude == 0) return Mathf.Infinity;
             float hour = 3 - Mathf.Atan2(hours.y, hours.x) * angleToHourConst;
             if (hour < 0) return hour + 12;
-            return hour;            
+            return hour;
         }
     }
 
@@ -181,7 +184,10 @@ public class Clock : MonoBehaviour
     {
         if (clockDestroyed) return;
         SetClock(hoursSpeed * Time.deltaTime, minutesSpeed * Time.deltaTime);
+
         if (!inClockZone) return;
+        if (Random.value < 0.001f) SpawnButterfly();
+
         if (CheckInputCorrectTime())
         {
             face.localPosition = faceStartPosition + Shake;
@@ -206,6 +212,12 @@ public class Clock : MonoBehaviour
         }
     }
 
+    void SpawnButterfly()
+    {
+        var bfly = Instantiate(butterflyPrefab);
+        bfly.transform.position = transform.position + transform.up * 0.5f;
+    }
+
     IEnumerator<WaitForSeconds> Explode()
     {
         var rb = hoursHandle.gameObject.AddComponent<Rigidbody2D>();
@@ -227,6 +239,11 @@ public class Clock : MonoBehaviour
         if (collision.tag == "Player")
         {
             inClockZone = true;
+            var n = Random.Range(2, 4);
+            for (int i = 0; i < n; i++)
+            {
+                SpawnButterfly();
+            }
             if (CheckInputCorrectTime())
             {
                 OnClockTime?.Invoke(this, ClockStatus.STOPPED);

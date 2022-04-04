@@ -464,6 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7663757159930a64bb0933e44f57b6d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  butterflyPrefab: {fileID: 2248813966550501679, guid: 9ac208e0eddab59429baef136a75c5a4, type: 3}
   hoursHandle: {fileID: 5325863427709267570}
   minutesHandle: {fileID: 5325863427798628869}
   face: {fileID: 5325863427036222162}
