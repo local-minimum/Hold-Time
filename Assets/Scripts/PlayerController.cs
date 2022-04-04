@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     float jumpStart;
     Vector3 lastStableGround;
 
+    Animator anim;
     float jumpDegrees = 0;
     float jumpDegreesChangeDirection = 1;
     bool alive = true;
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour
     {
         lastStableGround = transform.position;
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -116,12 +118,15 @@ public class PlayerController : MonoBehaviour
         switch (CheckJumping())
         {
             case JumpingTransition.Jumping:
-                // jumpAim.SetDegrees(0);
+                anim.ResetTrigger("Jump");
+                anim.SetTrigger("StartJumping");
                 break;
             case JumpingTransition.StartJump:
                 jumpStart = Time.realtimeSinceStartup;
                 break;
             case JumpingTransition.EndJump:
+                anim.ResetTrigger("StartJumping");
+                anim.SetTrigger("Jump");
                 float angle = Mathf.Deg2Rad * jumpDegrees;
                 float forcePercent = Mathf.Clamp01((Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
                 Debug.Log(forcePercent);
