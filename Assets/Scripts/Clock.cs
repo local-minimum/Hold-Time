@@ -112,11 +112,13 @@ public class Clock : MonoBehaviour
     }
 
     static float angleToHourConst = 1f / (2f * Mathf.PI) * 12f;
+    bool hoursFromKeyboard;
     float InputHours { 
         get
         {
-            Vector2 hours = Gamepad.current.leftStick.ReadValue();
-            if (hours.magnitude < inputThreshold) return Mathf.Infinity;
+            
+            Vector2 hours = SimpleUnifiedInput.VirtualPrimaryStick(inputThreshold, out hoursFromKeyboard);
+            if (hours.sqrMagnitude == 0) return Mathf.Infinity;
             float hour = 3 - Mathf.Atan2(hours.y, hours.x) * angleToHourConst;
             if (hour < 0) return hour + 12;
             return hour;            
@@ -124,12 +126,13 @@ public class Clock : MonoBehaviour
     }
 
     static float angleToMinutesConst = 1f / (2f * Mathf.PI) * 60f;
+    bool minutesFromKeyboard;
     float InputMinutes
     {
         get
         {
-            Vector2 minutes = Gamepad.current.rightStick.ReadValue();
-            if (minutes.magnitude < inputThreshold) return Mathf.Infinity;
+            Vector2 minutes = SimpleUnifiedInput.VirtualSecondaryStick(inputThreshold, out minutesFromKeyboard);
+            if (minutes.sqrMagnitude == 0) return Mathf.Infinity;
             float minute = 15 - Mathf.Atan2(minutes.y, minutes.x) * angleToMinutesConst;
             if (minute < 0) return minute + 60;
             return minute;
@@ -155,10 +158,13 @@ public class Clock : MonoBehaviour
         float hours = Hours;
         float minutes = Minutes;
         if (Mathf.Infinity == inputHours || Mathf.Infinity == inputMinutes) return false;
-        if (TimeDifference(inputHours, hours, 12) <= hourTolerance && TimeDifference(inputMinutes, minutes, 60) <= minuteTolerance) return true;
+        if (
+            TimeDifference(inputHours, hours, 12) <= (hoursFromKeyboard ? 1 : hourTolerance)
+            && TimeDifference(inputMinutes, minutes, 60) <= (minutesFromKeyboard ? 4 : minuteTolerance)
+        ) return true;
         return (
-            TimeDifference(inputMinutes * minuteToHour, hours, 12) <= hourTolerance 
-            && TimeDifference(inputHours * hourToMinute, minutes, 60) <= minuteTolerance
+            TimeDifference(inputMinutes * minuteToHour, hours, 12) <= (minutesFromKeyboard ? 1 : hourTolerance)
+            && TimeDifference(inputHours * hourToMinute, minutes, 60) <= (hoursFromKeyboard ? 4 : minuteTolerance)
         );
     }
 

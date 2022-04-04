@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-enum JumpingState { NotJumping, LeftShoulder, RightShoulder, Keyboard };
 enum JumpingTransition { NotJumping, StartJump, Jumping, EndJump };
 
 public delegate void JumpEvent();
@@ -81,33 +80,16 @@ public class PlayerController : MonoBehaviour
         switch (_jumping)
         {
             case JumpingState.NotJumping:
-                if (Gamepad.current.rightShoulder.isPressed)
-                {
-                    _jumping = JumpingState.RightShoulder;
-                    return JumpingTransition.StartJump;
-                }
-                else if (Gamepad.current.leftShoulder.isPressed)
-                {
-                    _jumping = JumpingState.LeftShoulder;
-                    return JumpingTransition.StartJump;
-                }
-                return JumpingTransition.NotJumping;
-            case JumpingState.LeftShoulder:
-                if (!Gamepad.current.leftShoulder.isPressed)
-                {
-                    _jumping = JumpingState.NotJumping;
-                    return JumpingTransition.EndJump;
-                }
-                return JumpingTransition.Jumping;
-            case JumpingState.RightShoulder:
-                if (!Gamepad.current.rightShoulder.isPressed)
-                {
-                    _jumping = JumpingState.NotJumping;
-                    return JumpingTransition.EndJump;
-                }
-                return JumpingTransition.Jumping;
+                _jumping = SimpleUnifiedInput.Jump;
+                if (_jumping == JumpingState.NotJumping) return JumpingTransition.NotJumping;
+                return JumpingTransition.StartJump;
             default:
-                return JumpingTransition.NotJumping;
+                if (!SimpleUnifiedInput.CheckJump(_jumping))
+                {
+                    _jumping = JumpingState.NotJumping;
+                    return JumpingTransition.EndJump;
+                }
+                return JumpingTransition.Jumping;
         }
     }
 

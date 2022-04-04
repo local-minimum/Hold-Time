@@ -191,7 +191,7 @@ public class LevelGoal : MonoBehaviour
         UpdateFlag();
         if (!listenForJump || Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
 
-        if (Gamepad.current.leftShoulder.IsPressed() || Gamepad.current.rightShoulder.IsPressed())
+        if (SimpleUnifiedInput.Jump != JumpingState.NotJumping)
         {
             HandleNext();
         }
