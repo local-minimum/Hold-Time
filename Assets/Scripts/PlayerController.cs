@@ -41,6 +41,14 @@ public class PlayerController : MonoBehaviour
     float jumpDegreesChangeDirection = 1;
     bool alive = true;
 
+    public bool Alive
+    {
+        get
+        {
+            return alive;
+        }
+    }
+
     private void Start()
     {
         lastStableGround = transform.position;
@@ -148,16 +156,23 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator<WaitForSeconds> Revive() {
         alive = false;
-        rb.isKinematic = true;
-        rb.velocity = Vector2.zero;
-        yield return new WaitForSeconds(0.5f);
         float start = Time.timeSinceLevelLoad;
         float progress = 0;
         while (progress < 1)
         {
-            progress = (Time.timeSinceLevelLoad - start) / 1.5f;
+            rb.velocity *= 0.2f;
+            yield return new WaitForSeconds(0.2f);
+            progress = (Time.timeSinceLevelLoad - start) / 0.5f;
+        }
+        start = Time.timeSinceLevelLoad;
+        progress = 0;
+        rb.velocity = Vector2.zero;
+        rb.isKinematic = true;
+        while (progress < 1)
+        {            
             transform.position = Vector3.Lerp(transform.position, lastStableGround, 0.1f);
             yield return new WaitForSeconds(0.02f);
+            progress = (Time.timeSinceLevelLoad - start) / 1.5f;
         }
         transform.position = lastStableGround;
         rb.isKinematic = false;

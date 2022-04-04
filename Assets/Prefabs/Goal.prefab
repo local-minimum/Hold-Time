@@ -105,6 +105,7 @@ MonoBehaviour:
   ageText: {fileID: 6021252837811286579}
   recordText: {fileID: 6021252838224115428}
   levelDoneCanvas: {fileID: 6021252837036906264}
+  butterflyPrefab: {fileID: 2248813966550501679, guid: 9ac208e0eddab59429baef136a75c5a4, type: 3}
 --- !u!1 &6021252836681354492
 GameObject:
   m_ObjectHideFlags: 0

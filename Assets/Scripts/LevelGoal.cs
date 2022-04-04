@@ -44,6 +44,9 @@ public class LevelGoal : MonoBehaviour
     [SerializeField]
     Canvas levelDoneCanvas;
 
+    [SerializeField]
+    Butterfly butterflyPrefab;
+
     Vector3 flagStartPosition;
     int jumps = 0;
     int retries = 0;
@@ -156,6 +159,13 @@ public class LevelGoal : MonoBehaviour
     private void HandleNewAge(int years)
     {
         if (years < 100) return;
+        Vector3 spawn = Camera.main.transform.position + Vector3.forward * 4f;
+        int bflies = Random.Range(10, 20);
+        for (int i = 0; i< bflies; i++)
+        {
+            var b = Instantiate(butterflyPrefab);
+            b.transform.position = spawn;
+        }
         OnLevelDone?.Invoke();
         var ageInfo = Age.GetAge();
         MakeStats(ageInfo, "Too old to continue", TextAlignmentOptions.BottomJustified);

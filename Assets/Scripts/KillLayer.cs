@@ -20,7 +20,7 @@ public class KillLayer : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         var player = collision.gameObject.GetComponent<PlayerController>();
-        if (player != null)
+        if (player != null && player.Alive)
         {
             OnPlayerKilled?.Invoke();
             int bflies = Random.Range(minButterflies, maxButterflies);
