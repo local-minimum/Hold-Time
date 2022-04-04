@@ -49,6 +49,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool Grounded
+    {
+        get
+        {
+            return grounded;
+        }
+    }
+
     private void Start()
     {
         lastStableGround = transform.position;
@@ -170,9 +178,11 @@ public class PlayerController : MonoBehaviour
         alive = true;
     }
 
+    bool testingGround = false;
+
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!grounded)
+        if (!grounded && !testingGround)
         {
             var groundState = GroundStates.NONE;
             if (collision.gameObject.tag == "StableGround") groundState = GroundStates.Stable;
@@ -194,12 +204,14 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator<WaitForSeconds> AttemptSetStableGround(Vector3 position, GroundStates state)
     {
+        testingGround = true;
         yield return new WaitForSeconds(0.5f);
         if (Vector3.Magnitude(transform.position - position) < 0.1f)
         {
             if (state == GroundStates.Stable) lastStableGround = transform.position + Vector3.up * 0.001f;
             grounded = true;
         }
+        testingGround = false;
     }
 
     private void OnCollisionExit2D(Collision2D collision)

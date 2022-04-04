@@ -1008,7 +1008,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Jump with either gamepad shoulder top buttons\n(Alt: space)\n\nBust clocks
     by moving both gamepad sticks to align with the hours and minutes handles for
-    a short while. \n(Alt: WASD & IJKL)"
+    a short while. \n(Alt: WASD & IJKL)\n\nB-button resets level or quits (Alt: Escape)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

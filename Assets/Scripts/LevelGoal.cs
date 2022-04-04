@@ -129,31 +129,49 @@ public class LevelGoal : MonoBehaviour
 
     bool continueWithNext = true;
 
+    PlayerController goalPlayer;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!listenForJump && collision.GetComponent<PlayerController>() != null)
+        var player = collision.GetComponent<PlayerController>();
+        if (!listenForJump && player != null)
         {
-            OnLevelDone?.Invoke();
-            var ageInfo = Age.GetAge();
-            string recordText = "Illegal highscore value!";
-            TextAlignmentOptions alignment = TextAlignmentOptions.BottomJustified;
-            int recordDays = PlayerPrefs.GetInt(HighscoreLocation, 101 * 365);
-
-            if (ageInfo.Age < recordDays)
-            {
-                recordText = "New Record!";
-                PlayerPrefs.SetInt(HighscoreLocation, ageInfo.Age);
-            } else
-            {
-                var record = new AgeInfo(recordDays);
-                if (record.years < 100) { 
-                    recordText = string.Format("Record: {0}", record.ToString());
-                }
-                alignment = TextAlignmentOptions.BottomRight;
-            }
-            MakeStats(ageInfo, recordText, alignment);
-            continueWithNext = true;
+            goalPlayer = player;
         }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.GetComponent<PlayerController>() == goalPlayer)
+        {
+            goalPlayer = null;
+        }
+    }
+
+    void Goal()
+    {
+        OnLevelDone?.Invoke();
+        var ageInfo = Age.GetAge();
+        string recordText = "Illegal highscore value!";
+        TextAlignmentOptions alignment = TextAlignmentOptions.BottomJustified;
+        int recordDays = PlayerPrefs.GetInt(HighscoreLocation, 101 * 365);
+
+        if (ageInfo.Age < recordDays)
+        {
+            recordText = "New Record!";
+            PlayerPrefs.SetInt(HighscoreLocation, ageInfo.Age);
+        }
+        else
+        {
+            var record = new AgeInfo(recordDays);
+            if (record.years < 100)
+            {
+                recordText = string.Format("Record: {0}", record.ToString());
+            }
+            alignment = TextAlignmentOptions.BottomRight;
+        }
+        MakeStats(ageInfo, recordText, alignment);
+        continueWithNext = true;
     }
 
     private void HandleNewAge(int years)
@@ -189,7 +207,17 @@ public class LevelGoal : MonoBehaviour
     private void Update()
     {
         UpdateFlag();
-        if (!listenForJump || Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
+        if (!listenForJump)
+        {
+            if (goalPlayer != null && goalPlayer.Alive && goalPlayer.Grounded)
+            {
+                Goal();
+            }
+
+            return;
+        }
+            
+        if (Time.timeSinceLevelLoad - wakeupTime < 0.5f) return;
 
         if (SimpleUnifiedInput.Jump != JumpingState.NotJumping)
         {
