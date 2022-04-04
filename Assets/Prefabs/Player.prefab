@@ -1525,7 +1525,7 @@ MonoBehaviour:
   jumpForceMin: 600
   maxChargeTime: 2
   jumpAim: {fileID: 5541316098164053465}
-  maxJumpDegrees: 30
+  maxJumpDegrees: 40
   angleLoopDuration: 0.6
 --- !u!70 &5541316098164053468
 CapsuleCollider2D:
