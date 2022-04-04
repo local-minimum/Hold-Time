@@ -30,9 +30,8 @@ public class Age : MonoBehaviour
 
     [SerializeField]
     Image yearProgressFrame;
-
-    [SerializeField, Range(0, 356)]
-    float destructionReset = 40;
+    
+    float destructionCost = 2;
 
     [SerializeField]
     Canvas canvas;
@@ -91,7 +90,7 @@ public class Age : MonoBehaviour
     private IEnumerator<WaitForSeconds> DelayIncreaseYear()
     {
         yield return new WaitForSeconds(1f);
-        dayOfYear = 999;
+        dayOfYear += 356;
     }
 
     private void HandleClockStatusChange(Clock clock, ClockStatus status)
@@ -100,7 +99,7 @@ public class Age : MonoBehaviour
 
         if (status == ClockStatus.DESTROYED)
         {
-            dayOfYear = Mathf.Clamp(dayOfYear - destructionReset, 0, 356);
+            dayOfYear = dayOfYear + destructionCost;
             yearProgressImage.fillAmount = Mathf.Clamp01(dayOfYear / 356);
         } else if (status == ClockStatus.RUNNING)
         {
@@ -128,9 +127,12 @@ public class Age : MonoBehaviour
         }
         if (dayOfYear >= 356f)
         {
-            dayOfYear = 0;
+            while (dayOfYear >= 356f)
+            {
+                dayOfYear -= 356;
+                years++;
+            }            
             yearProgressImage.fillAmount = Mathf.Clamp01(dayOfYear / 356);
-            years++;
             OnNewAge?.Invoke(years);
             StartCoroutine(ShowAge(years));
         }

@@ -103,21 +103,24 @@ public class PlayerController : MonoBehaviour
                 anim.ResetTrigger("Jump");
                 anim.SetTrigger("StartJumping");
                 break;
+
             case JumpingTransition.StartJump:
                 jumpStart = Time.realtimeSinceStartup;
                 break;
+
             case JumpingTransition.EndJump:
                 anim.ResetTrigger("StartJumping");
                 anim.SetTrigger("Jump");
+
                 float angle = Mathf.Deg2Rad * jumpDegrees;
-                float forcePercent = Mathf.Clamp01((Time.realtimeSinceStartup - jumpStart) / maxChargeTime);
-                Debug.Log(forcePercent);
+                float forcePercent = Mathf.Clamp01((Time.realtimeSinceStartup - jumpStart) / maxChargeTime);                
                 float force = Mathf.Lerp(jumpForceMin, jumpForceMax, forcePercent);
+
                 rb.AddForce(new Vector2(-Mathf.Sin(angle), Mathf.Cos(angle)) * force, ForceMode2D.Impulse);
                 OnJump?.Invoke();
                 break;
-            case JumpingTransition.NotJumping:
-                
+
+            case JumpingTransition.NotJumping:                
                 jumpDegrees += jumpDegreesChangeDirection * Time.deltaTime * maxJumpDegrees / angleLoopDuration;
 
                 if (jumpDegrees > maxJumpDegrees)
