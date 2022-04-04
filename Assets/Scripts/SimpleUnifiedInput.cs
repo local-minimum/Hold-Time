@@ -98,6 +98,17 @@ public static class SimpleUnifiedInput
         }
     }
 
+    public static bool Reset
+    {
+        get
+        {
+            return (
+                (Gamepad.current?.bButton.isPressed ?? false)
+                || (Keyboard.current?.escapeKey.isPressed ?? false)
+            );
+        }
+    }
+
     public static bool HasGamepad
     {
         get
