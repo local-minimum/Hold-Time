@@ -85,4 +85,24 @@ public static class SimpleUnifiedInput
         fromKeyboard = false;
         return Vector2.zero;
     }
+
+    public static bool Confirm
+    {
+        get
+        {
+            return (
+                Jump != JumpingState.NotJumping
+                || (Gamepad.current?.aButton.isPressed ?? false)
+                || (Keyboard.current?.enterKey.isPressed ?? false)
+            );
+        }
+    }
+
+    public static bool HasGamepad
+    {
+        get
+        {
+            return Gamepad.current != null;
+        }
+    }
 }
