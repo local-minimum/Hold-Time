@@ -162,7 +162,8 @@ public class PlayerController : MonoBehaviour
     IEnumerator<WaitForSeconds> Revive() {
         alive = false;
         float start = Time.timeSinceLevelLoad;
-        float progress = 0;
+        float progress = 0;        
+        anim.SetTrigger("Splatter");
         while (progress < 1)
         {
             rb.velocity *= 0.2f;

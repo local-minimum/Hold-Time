@@ -2021,7 +2021,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5541316098227266863}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 3.47}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.37}
 --- !u!212 &5541316098391955649
 SpriteRenderer:
   m_ObjectHideFlags: 0
